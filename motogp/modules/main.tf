@@ -16,22 +16,19 @@ terraform {
 
 module "vpc" {
   source = "./vpc"
-  vpc_cidr_block = var.vpc_cidr_block
+  vpc_cidr_block = var.vpc_cidr_block               #parameter = value     read values form varibales.tf
   public_subnet_cidr_blocks = var.public_subnet_cidr_blocks
   private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
   availability_zone = var.availability_zone
 }
-
-#data "aws_subnet" "public_subnet" {
-#  id = module.vpc.public_subnet.id
-#}
 
 module "ec2" {
   source = "./ec2_instance"
   instance_count = var.instance_count
   ami = var.ami
   instance_type = var.instance_type
-  subnet_id =  module.vpc.public_subnet_id
+  subnet_id =  module.vpc.public_subnet_id  #when we refer created resources by module for that define output block
+  security_groups = [module.vpc.aws_security_group]
   key_name = var.key_name
   project = var.project
 }
