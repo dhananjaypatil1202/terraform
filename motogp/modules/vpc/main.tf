@@ -58,3 +58,23 @@ resource "aws_route_table_association" "pvt_subnet_association-1a" {
   subnet_id = aws_subnet.private_subnet.id
   route_table_id = aws_route_table.pvt-rt.id
   }
+
+resource "aws_security_group" "my-vpc-sg" {
+  name = "my-vpc-sg"
+  vpc_id = aws_vpc.my-vpc.id
+  
+  
+dynamic "ingress" {                                          # block will created/repeat for each port
+    for_each = [80, 443, 3306, 22, 8080, 9100, 9090]
+      iterator = port
+    content {
+      description = "TLS from VPC"
+      from_port   = port.value
+      to_port     = port.value
+      protocol  = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+  
+  
+}
